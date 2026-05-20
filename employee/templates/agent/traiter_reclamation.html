@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Traitement de la réclamation</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; background-color: #f5f7fa; color: #333; }
+        .card { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        h2 { color: #1e293b; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .info-box { background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #2563eb; }
+        .info-box p { margin: 8px 0; font-size: 15px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #334155; }
+        select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box; }
+        textarea { height: 100px; resize: vertical; }
+        .btn-submit { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn-submit:hover { background: #1d4ed8; }
+        .btn-back { display: inline-block; margin-bottom: 20px; color: #64748b; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <a href="/agent/" class="btn-back">⬅ Retour au tableau de bord</a>
+
+        <h2>Traitement de la réclamation #{{ complaint.id }}</h2>
+
+        <div class="info-box">
+            <p><strong>Client / Employé :</strong> {{ complaint.employee.username }}</p>
+            <p><strong>Objet :</strong> {{ complaint.title }}</p>
+            <p><strong>Description du problème :</strong></p>
+            <p style="background: white; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                {{ complaint.description }}
+            </p>
+            <p><strong>Catégorie :</strong> {{ complaint.category.name }}</p>
+            <p><strong>Date de dépôt :</strong> {{ complaint.created_at|date:"d/m/Y H:i" }}</p>
+        </div>
+
+        <form action="{% url 'traiter_reclamation' complaint.id %}" method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="statut">Mettre à jour le statut :</label>
+                <select name="statut" id="statut">
+                    <option value="in_progress" {% if complaint.status == 'in_progress' %}selected{% endif %}>En cours de traitement</option>
+                    <option value="resolved" {% if complaint.status == 'resolved' %}selected{% endif %}>Marquer comme résolue</option>
+                    <option value="new" {% if complaint.status == 'new' %}selected{% endif %}>Nouveau (Remettre en attente)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="reponse">Réponse officielle destinée au client (Déclenche une notification) :</label>
+                <textarea name="reponse" id="reponse" placeholder="Écrivez votre solution ou réponse claire ici..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="commentaire">Commentaires internes (Visibles uniquement par les responsables) :</label>
+                <textarea name="commentaire" id="commentaire" placeholder="Notes techniques ou remarques pour l'équipe..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Enregistrer et notifier l'utilisateur</button>
+        </form>
+    </div>
+
+</body>
+</html>

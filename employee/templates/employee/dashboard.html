@@ -1,0 +1,25 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'style.css' %}">
+<a href="/logout/" class="logout-btn">Logout</a>
+<div class="stats-row">
+    <div class="stat-card">
+        <span class="stat-label">Total</span>
+        <span class="stat-value">{{ complaints|length }}</span>
+    </div>
+
+    <div class="stat-card">
+        <span class="stat-label">Nouvelles</span>
+        <span class="stat-value accent">{{ new_count }}</span>
+    </div>
+
+    <div class="stat-card">
+        <span class="stat-label">En cours</span>
+        <span class="stat-value blue">{{ in_progress_count }}</span>
+    </div>
+
+    <div class="stat-card">
+        <span class="stat-label">Résolues</span>
+        <span class="stat-value green">{{ resolved_count }}</span>
+    </div>
+</div>

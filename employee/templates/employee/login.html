@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion — Reclaim</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0f0f14;
+            --surface: #f5f4f0;
+            --card: #ffffff;
+            --accent: #e84545;
+            --accent2: #2563eb;
+            --muted: #6b7280;
+            --border: #e5e4e0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--ink);
+            color: var(--ink);
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        @media (max-width: 680px) {
+            body { grid-template-columns: 1fr; }
+            .brand-panel { display: none; }
+        }
+
+        /* LEFT PANEL */
+        .brand-panel {
+            background: var(--ink);
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+        .brand-panel::before {
+            content: '';
+            position: absolute;
+            top: -80px; right: -80px;
+            width: 320px; height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(232,69,69,0.15) 0%, transparent 70%);
+        }
+        .brand-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -60px; left: -60px;
+            width: 260px; height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%);
+        }
+        .brand-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+        .brand-logo span { color: var(--accent); }
+        .brand-copy h2 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(1.8rem, 2.5vw, 2.6rem);
+            color: #fff;
+            letter-spacing: -0.04em;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+        }
+        .brand-copy h2 em { color: var(--accent); font-style: normal; }
+        .brand-copy p { color: #6b6b80; font-size: 0.9rem; line-height: 1.6; }
+        .brand-features {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-top: 1.5rem;
+        }
+        .brand-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 0.85rem;
+            color: #8888a0;
+        }
+        .feature-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+        }
+        .brand-foot { color: #3a3a4a; font-size: 0.75rem; }
+
+        /* RIGHT PANEL */
+        .login-panel {
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .login-box {
+            width: 100%;
+            max-width: 380px;
+            animation: fadeUp 0.45s ease both;
+        }
+        .login-box h1 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.3rem;
+        }
+        .login-box .subtitle { color: var(--muted); font-size: 0.875rem; margin-bottom: 2rem; }
+
+        .field { margin-bottom: 1.2rem; }
+        label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 0.45rem;
+            color: var(--ink);
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--ink);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus {
+            border-color: var(--accent2);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+        }
+
+        .error-msg {
+            background: #fee2e2;
+            color: #b91c1c;
+            border-radius: 8px;
+            padding: 0.7rem 1rem;
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-login {
+            width: 100%;
+            background: var(--ink);
+            color: #fff;
+            border: none;
+            padding: 0.9rem;
+            border-radius: 10px;
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 0.5rem;
+        }
+        .btn-login:hover { opacity: 0.85; }
+        .btn-login:active { transform: scale(0.99); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LEFT: BRAND -->
+<div class="brand-panel">
+    <div class="brand-logo">Reclaim<span>.</span></div>
+    <div class="brand-copy">
+        <h2>Gérez vos <em>réclamations</em> en toute simplicité.</h2>
+        <p>Une plateforme dédiée au suivi et à la résolution de vos demandes internes.</p>
+        <div class="brand-features">
+            <div class="brand-feature"><div class="feature-dot"></div>Soumission rapide de réclamations</div>
+            <div class="brand-feature"><div class="feature-dot"></div>Suivi en temps réel du statut</div>
+            <div class="brand-feature"><div class="feature-dot"></div>Réponses directes de votre équipe</div>
+        </div>
+    </div>
+    <div class="brand-foot">© 2026 Reclaim — Portail Employé</div>
+</div>
+
+<!-- RIGHT: LOGIN -->
+<div class="login-panel">
+    <div class="login-box">
+        <h1>Connexion</h1>
+        <p class="subtitle">Entrez vos identifiants pour accéder à votre espace.</p>
+
+        {% if error %}
+        <div class="error-msg">⚠️ {{ error }}</div>
+        {% endif %}
+
+        <!-- Show a generic error if login failed (no credentials passed) -->
+        {% if request.method == "POST" and not request.user.is_authenticated %}
+        <div class="error-msg">⚠️ Identifiant ou mot de passe incorrect.</div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="field">
+                <label for="username">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username" autocomplete="username" required placeholder="votre.nom">
+            </div>
+            <div class="field">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-login">Se connecter →</button>
+        </form>
+        <p style="margin-top:15px; text-align:center;">
+    Don’t have an account?
+    <a href="/signup/">Create one</a>
+</p>
+    </div>
+</div>
+
+</body>
+</html>

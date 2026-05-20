@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi — {{ complaint.title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0f0f14;
+            --surface: #f5f4f0;
+            --card: #ffffff;
+            --accent: #e84545;
+            --accent2: #2563eb;
+            --muted: #6b7280;
+            --border: #e5e4e0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+
+        nav {
+            background: var(--ink);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: #fff; letter-spacing: -0.02em; }
+        .nav-brand span { color: var(--accent); }
+        .btn-back {
+            background: transparent;
+            border: 1px solid #3a3a4a;
+            color: #a0a0b0;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-back:hover { border-color: #fff; color: #fff; }
+
+        .page-wrap {
+            max-width: 780px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        /* STATUS HEADER */
+        .status-header {
+            background: var(--card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 1.8rem 2rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .status-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .badge-new { background: #fef9c3; color: #854d0e; }
+        .badge-in_progress { background: #dbeafe; color: #1d4ed8; }
+        .badge-resolved { background: #dcfce7; color: #15803d; }
+        .badge-rejected { background: #fee2e2; color: #b91c1c; }
+        .badge-category {
+            background: var(--surface);
+            color: var(--muted);
+            padding: 0.3rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            border: 1px solid var(--border);
+        }
+        .status-header h1 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.4rem;
+        }
+        .status-header .meta-row {
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        /* TIMELINE */
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--muted);
+            margin-bottom: 0.8rem;
+            margin-top: 1.5rem;
+        }
+
+        /* PROGRESS STEPS */
+        .progress-track {
+            background: var(--card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 1.8rem 2rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .steps {
+            display: flex;
+            align-items: flex-start;
+            gap: 0;
+            position: relative;
+        }
+        .step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .step-line {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            right: -50%;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+        .step:last-child .step-line { display: none; }
+        .step-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s;
+        }
+        .step.done .step-dot { background: #16a34a; border-color: #16a34a; color: #fff; }
+        .step.active .step-dot { background: var(--accent2); border-color: var(--accent2); color: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,0.15); }
+        .step-dot.done-line + .step-line { background: #16a34a; }
+        .step-name { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+        .step.done .step-name, .step.active .step-name { color: var(--ink); font-weight: 600; }
+
+        /* DESCRIPTION */
+        .detail-card {
+            background: var(--card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 1.8rem 2rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .detail-card h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.9rem;
+            color: var(--muted);
+        }
+        .description-text {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #333;
+        }
+        .attachment-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 1rem;
+            padding: 0.4rem 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.82rem;
+            text-decoration: none;
+            color: var(--accent2);
+            transition: border-color 0.2s;
+        }
+        .attachment-link:hover { border-color: var(--accent2); }
+
+        /* RESPONSES */
+        .responses-list { display: flex; flex-direction: column; gap: 1rem; }
+        .response-item {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.1rem 1.3rem;
+            border-left: 3px solid var(--accent2);
+        }
+        .response-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+        .response-agent { font-weight: 600; color: var(--ink); }
+        .response-text { font-size: 0.875rem; line-height: 1.6; }
+
+        .no-response {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted);
+            font-size: 0.875rem;
+        }
+        .no-response span { display: block; font-size: 1.8rem; margin-bottom: 0.5rem; opacity: 0.5; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-brand">Reclaim<span>.</span></div>
+    <a href="{% url 'employee_dashboard' %}" class="btn-back">← Mes réclamations</a>
+</nav>
+
+<div class="page-wrap">
+
+    <!-- STATUS HEADER -->
+    <div class="status-header">
+        <div class="status-meta">
+            {% if complaint.status == 'new' %}
+                <span class="badge-status badge-new">🟡 Nouvelle</span>
+            {% elif complaint.status == 'in_progress' %}
+                <span class="badge-status badge-in_progress">🔵 En cours</span>
+            {% elif complaint.status == 'resolved' %}
+                <span class="badge-status badge-resolved">🟢 Résolue</span>
+            {% elif complaint.status == 'rejected' %}
+                <span class="badge-status badge-rejected">🔴 Rejetée</span>
+            {% endif %}
+            {% if complaint.category %}
+                <span class="badge-category">{{ complaint.category.name }}</span>
+            {% endif %}
+        </div>
+        <h1>{{ complaint.title }}</h1>
+        <div class="meta-row">
+            Soumise le {{ complaint.created_at|date:"d F Y" }} · Dernière mise à jour le {{ complaint.updated_at|date:"d F Y" }}
+        </div>
+    </div>
+
+    <!-- PROGRESS STEPS -->
+    <div class="progress-track">
+        <div class="steps">
+            <div class="step {% if complaint.status == 'new' or complaint.status == 'in_progress' or complaint.status == 'resolved' %}done{% endif %}">
+                <div class="step-dot">✓</div>
+                <div class="step-line"></div>
+                <div class="step-name">Soumise</div>
+            </div>
+            <div class="step {% if complaint.status == 'in_progress' %}active{% elif complaint.status == 'resolved' %}done{% endif %}">
+                <div class="step-dot">{% if complaint.status == 'resolved' %}✓{% else %}2{% endif %}</div>
+                <div class="step-line"></div>
+                <div class="step-name">En traitement</div>
+            </div>
+            <div class="step {% if complaint.status == 'resolved' %}done{% endif %}">
+                <div class="step-dot">{% if complaint.status == 'resolved' %}✓{% else %}3{% endif %}</div>
+                <div class="step-name">Résolue</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="detail-card">
+        <h2>Description</h2>
+        <p class="description-text">{{ complaint.description }}</p>
+        {% if complaint.attachment %}
+        <a href="{{ complaint.attachment.url }}" class="attachment-link" target="_blank">
+            📎 Voir la pièce jointe
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- RESPONSES -->
+    <div class="detail-card">
+        <h2>Réponses ({{ complaint.responses.count }})</h2>
+        {% if complaint.responses.all %}
+        <div class="responses-list">
+            {% for r in complaint.responses.all %}
+            <div class="response-item">
+                <div class="response-meta">
+                    <span class="response-agent">{{ r.agent.get_full_name|default:r.agent.username }}</span>
+                    · {{ r.created_at|date:"d M Y à H:i" }}
+                </div>
+                <p class="response-text">{{ r.message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-response">
+            <span>💬</span>
+            Aucune réponse pour l'instant. Notre équipe vous contactera bientôt.
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+</body>
+</html>
