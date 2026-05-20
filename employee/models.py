@@ -40,3 +40,27 @@ class Response(models.Model):
 
     def __str__(self):
         return f"Réponse à {self.complaint.title}"
+
+# Ces propriétés permettent à ton ancien code d'utiliser les anciens noms
+    # sans générer d'erreur et sans toucher à tes fonctions Python !
+    @property
+    def client_nom(self):
+        return self.employee.username if self.employee else ""
+
+    @property
+    def titre(self):
+        return self.title
+
+    @property
+    def statut(self):
+        statuts_fr = {
+            'new': 'En attente',
+            'in_progress': 'En cours',
+            'resolved': 'Resolue',
+            'pending': 'En attente'
+        }
+        return statuts_fr.get(self.status, 'En attente')
+
+    @property
+    def date_creation(self):
+        return self.created_at

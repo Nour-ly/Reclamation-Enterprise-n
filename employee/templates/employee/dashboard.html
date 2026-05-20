@@ -1,25 +1,135 @@
-{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Employé - Reclaim</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .logo-area h2 { margin: 0; color: #2c3e50; }
+        .logo-area span { color: #007bff; font-weight: bold; }
+        .nav-actions { display: flex; gap: 15px; align-items: center; }
 
-<link rel="stylesheet" href="{% static 'style.css' %}">
-<a href="/logout/" class="logout-btn">Logout</a>
-<div class="stats-row">
-    <div class="stat-card">
-        <span class="stat-label">Total</span>
-        <span class="stat-value">{{ complaints|length }}</span>
+        /* Boutons */
+        .btn-submit { background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.2s; }
+        .btn-submit:hover { background-color: #218838; }
+        .logout-btn { background-color: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 5px; font-weight: bold; font-family: inherit; font-size: inherit; cursor: pointer; transition: opacity 0.2s; }
+        .logout-btn:hover { opacity: 0.9; }
+
+        /* Stats */
+        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; border-top: 5px solid #007bff; }
+        .card.total { border-top-color: #6c757d; }
+        .card.nouvelle { border-top-color: #ffc107; }
+        .card.encours { border-top-color: #17a2b8; }
+        .card.resolue { border-top-color: #28a745; }
+        .card h3 { margin: 0; color: #666; font-size: 14px; text-transform: uppercase; }
+        .card p { margin: 10px 0 0; font-size: 32px; font-weight: bold; color: #222; }
+
+        /* Tableau des Réclamations & Réponses */
+        .table-section { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 30px; }
+        .table-section h3 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #e0e0e0; }
+        th { background-color: #f8f9fa; color: #555; }
+
+        /* Badges de Statut */
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; display: inline-block; }
+        .badge.en-attente { background-color: #ffeeba; color: #856404; }
+        .badge.en-cours { background-color: #bee5eb; color: #0c5460; }
+        .badge.resolue { background-color: #c3e6cb; color: #155724; }
+        .badge.rejetee { background-color: #f5c6cb; color: #721c24; }
+
+        /* Zone de Notification / Réponse Agent */
+        .agent-response-box { background-color: #e8f4fd; border-left: 4px solid #17a2b8; padding: 8px 12px; border-radius: 4px; font-size: 14px; color: #1d6f8a; }
+        .no-response { color: #aaa; font-style: italic; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-area">
+            <h2>Espace Collaborateur — <span>RECLAIM</span></h2>
+        </div>
+        <div class="nav-actions">
+            <a href="/employee/complaint/submit/" class="btn-submit">+ Nouvelle Réclamation</a>
+
+            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Déconnexion</button>
+            </form>
+        </div>
     </div>
 
-    <div class="stat-card">
-        <span class="stat-label">Nouvelles</span>
-        <span class="stat-value accent">{{ new_count }}</span>
+    <div class="stats-container">
+        <div class="card total">
+            <h3>Total Réclamations</h3>
+            <p>{{ total_count }}</p>
+        </div>
+        <div class="card nouvelle">
+            <h3>En attente</h3>
+            <p>{{ new_count }}</p>
+        </div>
+        <div class="card encours">
+            <h3>En cours</h3>
+            <p>{{ in_progress_count }}</p>
+        </div>
+        <div class="card resolue">
+            <h3>Résolues</h3>
+            <p>{{ resolved_count }}</p>
+        </div>
     </div>
 
-    <div class="stat-card">
-        <span class="stat-label">En cours</span>
-        <span class="stat-value blue">{{ in_progress_count }}</span>
+    <div class="table-section">
+        <h3>Suivi de mes réclamations & Réponses du support</h3>
+
+        {% if complaints %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Titre</th>
+                    <th>Priorité</th>
+                    <th>Statut</th>
+                    <th>Date d'envoi</th>
+                    <th>🔔 Notification / Réponse de l'Agent</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in complaints %}
+                <tr>
+                    <td><strong>#{{ c.id }}</strong></td>
+                    <td>{{ c.titre }}</td>
+                    <td>{{ c.priorite }}</td>
+                    <td>
+                        {% if c.statut == 'En attente' %}
+                            <span class="badge en-attente">En attente</span>
+                        {% elif c.statut == 'En cours' %}
+                            <span class="badge en-cours">En cours</span>
+                        {% elif c.statut == 'Resolue' %}
+                            <span class="badge resolue">Résolue</span>
+                        {% else %}
+                            <span class="badge rejetee">Rejetée</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ c.date_creation|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% if c.reponse_agent %}
+                            <div class="agent-response-box">
+                                <strong>Message de l'Agent :</strong> {{ c.reponse_agent }}
+                            </div>
+                        {% else %}
+                            <span class="no-response">Aucun retour pour le moment.</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p style="text-align: center; color: #888; margin-top: 20px;">Vous n'avez soumis aucune réclamation pour le moment.</p>
+        {% endif %}
     </div>
 
-    <div class="stat-card">
-        <span class="stat-label">Résolues</span>
-        <span class="stat-value green">{{ resolved_count }}</span>
-    </div>
-</div>
+</body>
+</html>

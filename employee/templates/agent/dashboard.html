@@ -78,7 +78,7 @@
 {% block content %}
 <div class="page-header">
     <h1>Espace de Suivi</h1>
-    <p>Prenez en charge les demandes des employés et apportez des solutions de traitement.</p>
+    <p>Connecté en tant que : <strong>{{ nom_agent }} (Responsable Suivi)</strong></p>
 </div>
 
 <h2 class="section-title">📥 Mes Réclamations en charge</h2>
@@ -88,8 +88,8 @@
             <tr>
                 <th>ID</th>
                 <th>Employé</th>
+                <th>Email</th>
                 <th>Titre</th>
-                <th>Catégorie</th>
                 <th>Statut</th>
                 <th>Dernière modif.</th>
                 <th>Action</th>
@@ -100,8 +100,8 @@
             <tr>
                 <td style="color: var(--muted);">#{{ r.id }}</td>
                 <td style="font-weight: 500;">{{ r.employee.username }}</td>
+                <td style="color: var(--muted);">{{ r.employee.username }}@emsi.ma</td>
                 <td><strong>{{ r.title }}</strong></td>
-                <td><span style="background: #f3f4f6; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem;">{{ r.category.name }}</span></td>
                 <td><span class="badge bg-in_progress">En cours</span></td>
                 <td style="font-size: 0.85rem; color: var(--muted);">{{ r.updated_at|date:"d/m H:i" }}</td>
                 <td>
@@ -124,8 +124,8 @@
             <tr>
                 <th>ID</th>
                 <th>Employé</th>
+                <th>Email</th>
                 <th>Titre de la réclamation</th>
-                <th>Catégorie</th>
                 <th>Statut initial</th>
                 <th>Date d'arrivée</th>
                 <th>Action</th>
@@ -136,12 +136,12 @@
             <tr>
                 <td style="color: var(--muted);">#{{ r.id }}</td>
                 <td style="font-weight: 500;">{{ r.employee.username }}</td>
+                <td style="color: var(--muted);">{{ r.employee.username }}@emsi.ma</td>
                 <td>{{ r.title }}</td>
-                <td><span style="background: #f3f4f6; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem;">{{ r.category.name }}</span></td>
                 <td><span class="badge bg-new">Nouveau</span></td>
                 <td style="font-size: 0.85rem; color: var(--muted);">{{ r.created_at|date:"d/m/Y H:i" }}</td>
                 <td>
-                    <a href="{% url 'traiter_reclamation' r.id %}" class="btn btn-success">Prendre en charge</a>
+                    <a href="{% url 's_attribuer_reclamation' r.id %}" class="btn btn-success">Prendre en charge</a>
                 </td>
             </tr>
             {% empty %}
