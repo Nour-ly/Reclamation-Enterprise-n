@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Dashboard des réclamations</title>
+</head>
+<body>
+  <h1>Dashboard des réclamations</h1>
+
+  <h2>Statistiques générales</h2>
+
+  <div style="display:flex; gap:15px; flex-wrap:wrap;">
+
+      <div style="padding:15px; background:#ddd;">
+          <h3>Total</h3>
+          <p>{{ total }}</p>
+      </div>
+
+  </div>
+
+  <hr>
+
+  <h2>Par statut</h2>
+
+  <div style="display:flex; gap:15px; flex-wrap:wrap;">
+
+      <div style="background:#fff3cd; padding:15px;">
+          Nouvelle <br> {{ nouvelle }}
+      </div>
+
+      <div style="background:#cce5ff; padding:15px;">
+          En cours <br> {{ en_cours }}
+      </div>
+
+      <div style="background:#d4edda; padding:15px;">
+          Résolue <br> {{ resolue }}
+      </div>
+
+      <div style="background:#f8d7da; padding:15px;">
+          Rejetée <br> {{ rejetee }}
+      </div>
+
+  </div>
+
+  <hr>
+
+  <h2>Par priorité</h2>
+
+  <div style="display:flex; gap:15px; flex-wrap:wrap;">
+
+      <div style="background:#e2e3e5; padding:15px;">
+          Faible <br> {{ faible }}
+      </div>
+
+      <div style="background:#fff3cd; padding:15px;">
+          Moyenne <br> {{ moyenne }}
+      </div>
+
+      <div style="background:#f8d7da; padding:15px;">
+          Urgente <br> {{ urgente }}
+      </div>
+
+  </div>
+</body>
+</html>

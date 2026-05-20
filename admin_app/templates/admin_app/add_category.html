@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter catégorie</title>
+</head>
+<body>
+  <h1>Ajouter catégorie</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Nom catégorie">
+    <button type="submit">Ajouter</button>
+  </form>
+</body>
+</html>
