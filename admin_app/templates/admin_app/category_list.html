@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des catégories</title>
+</head>
+<body>
+    <h1>Liste des catégories</h1>
+
+    <a href="{% url 'add_category' %}">Ajouter une catégorie</a>
+
+    <ul>
+      {% for c in categories %}
+        <li>
+          {{ c.name }}
+
+          <a href="{% url 'edit_category' c.id %}">Modifier</a>
+          <a href="{% url 'delete_category' c.id %}">Supprimer</a>
+        </li>
+      {% endfor %}
+    </ul>
+</body>
+</html>

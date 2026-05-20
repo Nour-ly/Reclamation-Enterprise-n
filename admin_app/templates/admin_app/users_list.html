@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des utilisateurs</title>
+</head>
+<body>
+
+<h1>Liste des utilisateurs</h1>
+
+<a href="{% url 'add_user' %}">
+    <button>Ajouter utilisateur</button>
+</a>
+
+<table border="1" cellpadding="10">
+
+    <tr>
+        <th>Username</th>
+        <th>Role</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for user in users %}
+    <tr>
+        <td>{{ user.username }}</td>
+        <td>{{ user.profile.role }}</td>
+        <td>
+            <a href="{% url 'delete_user' user.id %}">
+                <button>Supprimer</button>
+            </a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">Aucun utilisateur</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+</body>
+</html>

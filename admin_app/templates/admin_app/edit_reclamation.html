@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier réclamation</title>
+</head>
+<body>
+
+<h1>Modifier réclamation</h1>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <!-- Titre -->
+    <input type="text" name="title" value="{{ rec.title }}">
+
+    <br><br>
+
+    <!-- Description -->
+    <textarea name="description">{{ rec.description }}</textarea>
+
+    <br><br>
+
+    <!-- Employee -->
+    <label>Employé :</label>
+
+    <select name="user">
+        {% for u in users %}
+            <option value="{{ u.id }}"
+                {% if rec.employee.id == u.id %}selected{% endif %}>
+                {{ u.username }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <br><br>
+
+    <!-- Catégorie -->
+    <label>Catégorie :</label>
+
+    <select name="category">
+        {% for c in categories %}
+            <option value="{{ c.id }}"
+                {% if rec.category.id == c.id %}selected{% endif %}>
+                {{ c.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <br><br>
+
+    <!-- Priorité -->
+    <label>Priorité :</label>
+
+    <select name="priority">
+        {% for key, value in rec.PRIORITY_CHOICES %}
+            <option value="{{ key }}"
+                {% if rec.priority == key %}selected{% endif %}>
+                {{ value }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <br><br>
+
+    <!-- Statut -->
+    <label>Statut :</label>
+
+    <select name="status">
+        {% for key, value in rec.STATUS_CHOICES %}
+            <option value="{{ key }}"
+                {% if rec.status == key %}selected{% endif %}>
+                {{ value }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <br><br>
+
+    <button type="submit">Modifier</button>
+
+</form>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des réclamations</title>
+</head>
+<body>
+    <h1>Liste des réclamations</h1>
+
+    <a href="{% url 'add_reclamation' %}">
+        <button>Ajouter une réclamation</button>
+    </a>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Utilisateur</th>
+                <th>Catégorie</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for rec in reclamations %}
+            <tr>
+                <td>{{ rec.title }}</td>
+                <td>{{ rec.employee.username }}</td>
+                <td>{{ rec.category.name }}</td>
+                <td>{{ rec.get_status_display }}</td>
+
+                <td>
+                    <!-- Modifier -->
+                    <a href="{% url 'edit_reclamation' rec.id %}">
+                        <button>Modifier</button>
+                    </a>
+
+                    <!-- Supprimer -->
+                    <a href="{% url 'delete_reclamation' rec.id %}"
+                       onclick="return confirm('Voulez-vous vraiment supprimer ?')">
+                        <button>Supprimer</button>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">Aucune réclamation trouvée</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
