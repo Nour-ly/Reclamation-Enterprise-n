@@ -183,7 +183,6 @@
 </head>
 <body>
 
-<!-- LEFT: BRAND -->
 <div class="brand-panel">
     <div class="brand-logo">Reclaim<span>.</span></div>
     <div class="brand-copy">
@@ -198,7 +197,6 @@
     <div class="brand-foot">© 2026 Reclaim — Portail Employé</div>
 </div>
 
-<!-- RIGHT: LOGIN -->
 <div class="login-panel">
     <div class="login-box">
         <h1>Connexion</h1>
@@ -208,14 +206,12 @@
         <div class="error-msg">⚠️ {{ error }}</div>
         {% endif %}
 
-        <!-- Show a generic error if login failed (no credentials passed) -->
         {% if request.method == "POST" and not request.user.is_authenticated %}
         <div class="error-msg">⚠️ Identifiant ou mot de passe incorrect.</div>
         {% endif %}
 
         <form method="POST">
-            {% csrf_token %}
-            <div class="field">
+            {% csrf_token %} <div class="field">
                 <label for="username">Nom d'utilisateur</label>
                 <input type="text" id="username" name="username" autocomplete="username" required placeholder="votre.nom">
             </div>
@@ -226,9 +222,9 @@
             <button type="submit" class="btn-login">Se connecter →</button>
         </form>
         <p style="margin-top:15px; text-align:center;">
-    Don’t have an account?
-    <a href="/signup/">Create one</a>
-</p>
+            Don’t have an account?
+            <a href="/signup/">Create one</a>
+        </p>
     </div>
 </div>
 

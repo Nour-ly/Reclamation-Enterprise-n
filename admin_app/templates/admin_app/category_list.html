@@ -1,23 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Liste des catégories</title>
-</head>
-<body>
-    <h1>Liste des catégories</h1>
+{% extends 'admin_app/base.html' %}
 
-    <a href="{% url 'add_category' %}">Ajouter une catégorie</a>
+{% block title %}Catégories — Reclaim{% endblock %}
 
-    <ul>
-      {% for c in categories %}
-        <li>
-          {{ c.name }}
+{% block extra_css %}
+<style>
+    .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    .btn-add {
+        background: var(--ink);
+        color: #fff;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: opacity 0.2s;
+    }
+    .btn-add:hover { opacity: 0.85; }
 
-          <a href="{% url 'edit_category' c.id %}">Modifier</a>
-          <a href="{% url 'delete_category' c.id %}">Supprimer</a>
-        </li>
-      {% endfor %}
-    </ul>
-</body>
-</html>
+    .table-container {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        max-width: 800px; /* Plus serré pour les catégories */
+    }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
+    th {
+        background: #fafafa;
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 1.5rem;
+        font-weight: 700;
+        color: var(--muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    td { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+
+    .action-links a {
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-right: 1.2rem;
+    }
+    .link-edit { color: var(--accent2); }
+    .link-edit:hover { text-decoration: underline; }
+    .link-delete { color: var(--accent); }
+    .link-delete:hover { text-decoration: underline; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="header-actions">
+    <div class="page-header" style="margin-bottom: 0;">
+        <h1>Catégories de réclamations</h1>
+        <p>Configurez les types de requêtes disponibles pour les employés (ex: Technique, RH...).</p>
+    </div>
+    <a href="{% url 'add_category' %}" class="btn-add">+ Ajouter une catégorie</a>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Nom de la catégorie</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in categories %}
+            <tr>
+                <td style="font-weight: 700; color: var(--ink);">📁 {{ c.name }}</td>
+                <td class="action-links">
+                    <a href="{% url 'edit_category' c.id %}" class="link-edit">Modifier</a>
+                    <a href="{% url 'delete_category' c.id %}" class="link-delete" onclick="return confirm('Supprimer cette catégorie ?')">Supprimer</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2" style="text-align: center; color: var(--muted); padding: 2rem;">Aucune catégorie enregistrée.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

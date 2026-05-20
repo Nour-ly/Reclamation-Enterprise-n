@@ -1,65 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title> Dashboard des réclamations</title>
-</head>
-<body>
-  <h1>Dashboard des réclamations</h1>
+{% extends 'admin_app/base.html' %}
 
-  <h2>Statistiques générales</h2>
+{% block title %}Dashboard — Reclaim{% endblock %}
 
-  <div style="display:flex; gap:15px; flex-wrap:wrap;">
+{% block extra_css %}
+<style>
+    /* GRIDS POUR LES CARTES STATS */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
 
-      <div style="padding:15px; background:#ddd;">
-          <h3>Total</h3>
-          <p>{{ total }}</p>
-      </div>
+    /* LE STYLE DES CARTES IMPLIQUANT TON LOGO/THÈME */
+    .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+    }
 
-  </div>
+    .stat-card h3 {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        margin-bottom: 0.5rem;
+    }
 
-  <hr>
+    .stat-number {
+        font-family: 'Syne', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--ink);
+    }
 
-  <h2>Par statut</h2>
+    /* BORDURES COLORÉES ACCENTUÉES */
+    .card-total { border-left: 4px solid var(--ink); }
+    .card-new { border-left: 4px solid #f59e0b; }       /* Orange ambré */
+    .card-progress { border-left: 4px solid var(--accent2); } /* Bleu */
+    .card-resolved { border-left: 4px solid #10b981; }   /* Vert émeraude */
+    .card-rejected { border-left: 4px solid var(--accent); }  /* Rouge Ink */
+    
+    .card-low { border-left: 4px solid #9ca3af; }       /* Gris */
+    .card-medium { border-left: 4px solid #f59e0b; }    /* Orange */
+    .card-urgent { border-left: 4px solid var(--accent); } /* Rouge */
 
-  <div style="display:flex; gap:15px; flex-wrap:wrap;">
+    .section-title {
+        font-size: 1.25rem;
+        color: var(--ink);
+        margin-bottom: 1.2rem;
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
 
-      <div style="background:#fff3cd; padding:15px;">
-          Nouvelle <br> {{ nouvelle }}
-      </div>
+{% block content %}
+<div class="page-header">
+    <h1>Vue d'ensemble</h1>
+    <p>Rapports en temps réel de l'activité des réclamations au sein de l'entreprise.</p>
+</div>
 
-      <div style="background:#cce5ff; padding:15px;">
-          En cours <br> {{ en_cours }}
-      </div>
+<h2 class="section-title">Statistiques générales</h2>
+<div class="stats-grid">
+    <div class="stat-card card-total">
+        <h3>Total des réclamations</h3>
+        <div class="stat-number">{{ total }}</div>
+    </div>
+</div>
 
-      <div style="background:#d4edda; padding:15px;">
-          Résolue <br> {{ resolue }}
-      </div>
+<h2 class="section-title">Réclamations par statut</h2>
+<div class="stats-grid">
+    <div class="stat-card card-new">
+        <h3>Nouvelles</h3>
+        <div class="stat-number">{{ nouvelle }}</div>
+    </div>
+    <div class="stat-card card-progress">
+        <h3>En cours</h3>
+        <div class="stat-number">{{ en_cours }}</div>
+    </div>
+    <div class="stat-card card-resolved">
+        <h3>Résolues</h3>
+        <div class="stat-number">{{ resolue }}</div>
+    </div>
+    <div class="stat-card card-rejected">
+        <h3>Rejetées</h3>
+        <div class="stat-number">{{ rejetee }}</div>
+    </div>
+</div>
 
-      <div style="background:#f8d7da; padding:15px;">
-          Rejetée <br> {{ rejetee }}
-      </div>
-
-  </div>
-
-  <hr>
-
-  <h2>Par priorité</h2>
-
-  <div style="display:flex; gap:15px; flex-wrap:wrap;">
-
-      <div style="background:#e2e3e5; padding:15px;">
-          Faible <br> {{ faible }}
-      </div>
-
-      <div style="background:#fff3cd; padding:15px;">
-          Moyenne <br> {{ moyenne }}
-      </div>
-
-      <div style="background:#f8d7da; padding:15px;">
-          Urgente <br> {{ urgente }}
-      </div>
-
-  </div>
-</body>
-</html>
+<h2 class="section-title">Niveaux de priorité</h2>
+<div class="stats-grid">
+    <div class="stat-card card-low">
+        <h3>Priorité Faible</h3>
+        <div class="stat-number">{{ faible }}</div>
+    </div>
+    <div class="stat-card card-medium">
+        <h3>Priorité Moyenne</h3>
+        <div class="stat-number">{{ moyenne }}</div>
+    </div>
+    <div class="stat-card card-urgent">
+        <h3>Priorité Urgente</h3>
+        <div class="stat-number">{{ urgente }}</div>
+    </div>
+</div>
+{% endblock %}

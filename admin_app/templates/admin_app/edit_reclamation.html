@@ -1,85 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Modifier réclamation</title>
-</head>
-<body>
+{% extends 'admin_app/base.html' %}
 
-<h1>Modifier réclamation</h1>
+{% block title %}Modifier la réclamation — Reclaim{% endblock %}
 
-<form method="POST">
-    {% csrf_token %}
+{% block extra_css %}
+<style>
+    .btn-back { display: inline-block; margin-bottom: 1.5rem; color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+    .btn-back:hover { color: var(--ink); }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2.5rem; max-width: 750px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .full-width { grid-column: span 2; }
+    label { display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; color: var(--ink); }
+    input[type="text"], select, textarea { width: 100%; background: var(--card); border: 1.5px solid var(--border); border-radius: 8px; padding: 0.8rem 1rem; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--ink); outline: none; transition: all 0.2s; }
+    input[type="text"]:focus, select:focus, textarea:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+    textarea { height: 120px; resize: vertical; }
+    .btn-submit { width: 100%; background: var(--ink); color: #fff; border: none; padding: 1rem; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 1rem; }
+    .btn-submit:hover { opacity: 0.9; }
+</style>
+{% endblock %}
 
-    <!-- Titre -->
-    <input type="text" name="title" value="{{ rec.title }}">
+{% block content %}
+<a href="{% url 'reclamation_list' %}" class="btn-back">← Retour aux réclamations</a>
 
-    <br><br>
+<div class="card">
+    <h1 style="margin-bottom: 1.5rem; font-size: 1.7rem;">Modifier la réclamation #{{ rec.id }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="title">Titre / Objet</label>
+                <input type="text" id="title" name="title" value="{{ rec.title }}" required>
+            </div>
 
-    <!-- Description -->
-    <textarea name="description">{{ rec.description }}</textarea>
+            <div class="form-group full-width">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required>{{ rec.description }}</textarea>
+            </div>
 
-    <br><br>
+            <div class="form-group">
+                <label for="user">Employé</label>
+                <select id="user" name="user">
+                    {% for u in users %}
+                        <option value="{{ u.id }}" {% if rec.employee.id == u.id %}selected{% endif %}>
+                            {{ u.username }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-    <!-- Employee -->
-    <label>Employé :</label>
+            <div class="form-group">
+                <label for="category">Catégorie</label>
+                <select id="category" name="category">
+                    {% for c in categories %}
+                        <option value="{{ c.id }}" {% if rec.category.id == c.id %}selected{% endif %}>
+                            {{ c.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-    <select name="user">
-        {% for u in users %}
-            <option value="{{ u.id }}"
-                {% if rec.employee.id == u.id %}selected{% endif %}>
-                {{ u.username }}
-            </option>
-        {% endfor %}
-    </select>
+            <div class="form-group">
+                <label for="priority">Priorité</label>
+                <select id="priority" name="priority">
+                    {% for key, value in rec.PRIORITY_CHOICES %}
+                        <option value="{{ key }}" {% if rec.priority == key %}selected{% endif %}>
+                            {{ value }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-    <br><br>
+            <div class="form-group">
+                <label for="status">Statut</label>
+                <select id="status" name="status">
+                    {% for key, value in rec.STATUS_CHOICES %}
+                        <option value="{{ key }}" {% if rec.status == key %}selected{% endif %}>
+                            {{ value }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
 
-    <!-- Catégorie -->
-    <label>Catégorie :</label>
-
-    <select name="category">
-        {% for c in categories %}
-            <option value="{{ c.id }}"
-                {% if rec.category.id == c.id %}selected{% endif %}>
-                {{ c.name }}
-            </option>
-        {% endfor %}
-    </select>
-
-    <br><br>
-
-    <!-- Priorité -->
-    <label>Priorité :</label>
-
-    <select name="priority">
-        {% for key, value in rec.PRIORITY_CHOICES %}
-            <option value="{{ key }}"
-                {% if rec.priority == key %}selected{% endif %}>
-                {{ value }}
-            </option>
-        {% endfor %}
-    </select>
-
-    <br><br>
-
-    <!-- Statut -->
-    <label>Statut :</label>
-
-    <select name="status">
-        {% for key, value in rec.STATUS_CHOICES %}
-            <option value="{{ key }}"
-                {% if rec.status == key %}selected{% endif %}>
-                {{ value }}
-            </option>
-        {% endfor %}
-    </select>
-
-    <br><br>
-
-    <button type="submit">Modifier</button>
-
-</form>
-
-</body>
-</html>
+        <button type="submit" class="btn-submit">Enregistrer les modifications →</button>
+    </form>
+</div>
+{% endblock %}

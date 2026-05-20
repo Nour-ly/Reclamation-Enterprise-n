@@ -1,66 +1,130 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Traitement de la réclamation</title>
-    <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; background-color: #f5f7fa; color: #333; }
-        .card { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        h2 { color: #1e293b; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-        .info-box { background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #2563eb; }
-        .info-box p { margin: 8px 0; font-size: 15px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; color: #334155; }
-        select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box; }
-        textarea { height: 100px; resize: vertical; }
-        .btn-submit { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        .btn-submit:hover { background: #1d4ed8; }
-        .btn-back { display: inline-block; margin-bottom: 20px; color: #64748b; text-decoration: none; font-size: 14px; }
-    </style>
-</head>
-<body>
+{% extends 'agent/base_agent.html' %}
 
-    <div class="card">
-        <a href="/agent/" class="btn-back">⬅ Retour au tableau de bord</a>
+{% block title %}Traitement #{{ complaint.id }} — Reclaim{% endblock %}
 
-        <h2>Traitement de la réclamation #{{ complaint.id }}</h2>
+{% block extra_css %}
+<style>
+    .btn-back {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+    .btn-back:hover { color: var(--ink); }
 
-        <div class="info-box">
-            <p><strong>Client / Employé :</strong> {{ complaint.employee.username }}</p>
-            <p><strong>Objet :</strong> {{ complaint.title }}</p>
-            <p><strong>Description du problème :</strong></p>
-            <p style="background: white; padding: 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
-                {{ complaint.description }}
-            </p>
-            <p><strong>Catégorie :</strong> {{ complaint.category.name }}</p>
-            <p><strong>Date de dépôt :</strong> {{ complaint.created_at|date:"d/m/Y H:i" }}</p>
-        </div>
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 2.5rem;
+        max-width: 850px;
+    }
 
-        <form action="{% url 'traiter_reclamation' complaint.id %}" method="POST">
-            {% csrf_token %}
+    /* BLOC DETAILS RECLAMATION */
+    .info-box {
+        background: #fafafa;
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--accent);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+    .info-box p {
+        margin-bottom: 0.8rem;
+        font-size: 0.95rem;
+        color: #333;
+    }
+    .info-box p:last-child { margin-bottom: 0; }
 
-            <div class="form-group">
-                <label for="statut">Mettre à jour le statut :</label>
-                <select name="statut" id="statut">
-                    <option value="in_progress" {% if complaint.status == 'in_progress' %}selected{% endif %}>En cours de traitement</option>
-                    <option value="resolved" {% if complaint.status == 'resolved' %}selected{% endif %}>Marquer comme résolue</option>
-                    <option value="new" {% if complaint.status == 'new' %}selected{% endif %}>Nouveau (Remettre en attente)</option>
-                </select>
-            </div>
+    /* CONFIG FORMULAIRE */
+    .form-group { margin-bottom: 1.5rem; }
+    label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+        color: var(--ink);
+    }
+    select, textarea {
+        width: 100%;
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.95rem;
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    select:focus, textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+    textarea { height: 110px; resize: vertical; }
 
-            <div class="form-group">
-                <label for="reponse">Réponse officielle destinée au client (Déclenche une notification) :</label>
-                <textarea name="reponse" id="reponse" placeholder="Écrivez votre solution ou réponse claire ici..."></textarea>
-            </div>
+    .btn-submit {
+        width: 100%;
+        background: var(--ink);
+        color: #fff;
+        border: none;
+        padding: 1rem;
+        border-radius: 8px;
+        font-family: 'Syne', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        margin-top: 0.5rem;
+    }
+    .btn-submit:hover { opacity: 0.9; }
+</style>
+{% endblock %}
 
-            <div class="form-group">
-                <label for="commentaire">Commentaires internes (Visibles uniquement par les responsables) :</label>
-                <textarea name="commentaire" id="commentaire" placeholder="Notes techniques ou remarques pour l'équipe..."></textarea>
-            </div>
+{% block content %}
+<a href="{% url 'agent_dashboard' %}" class="btn-back">← Retour au tableau de bord</a>
 
-            <button type="submit" class="btn-submit">Enregistrer et notifier l'utilisateur</button>
-        </form>
+<div class="card">
+    <h1 style="margin-bottom: 1.5rem; font-size: 1.7rem;">Traitement de la réclamation #{{ complaint.id }}</h1>
+
+    <div class="info-box">
+        <p><strong>👤 Collaborateur :</strong> {{ complaint.employee.username }}</p>
+        <p><strong>🎯 Objet :</strong> {{ complaint.title }}</p>
+        <p><strong>🏷️ Catégorie :</strong> {{ complaint.category.name }} | <strong>📅 Déposée le :</strong> {{ complaint.created_at|date:"d/m/Y à H:i" }}</p>
+        <p style="margin-top: 1rem; font-weight: 700; color: var(--ink);">Description du problème :</p>
+        <p style="background: #ffffff; padding: 1rem; border-radius: 6px; border: 1px solid var(--border); line-height: 1.5; color: #444;">
+            {{ complaint.description }}
+        </p>
     </div>
 
-</body>
-</html>
+    <form action="{% url 'traiter_reclamation' complaint.id %}" method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="statut">Mettre à jour le statut</label>
+            <select name="statut" id="statut">
+                <option value="in_progress" {% if complaint.status == 'in_progress' %}selected{% endif %}>En cours de traitement</option>
+                <option value="resolved" {% if complaint.status == 'resolved' %}selected{% endif %}>Marquer comme résolue</option>
+                <option value="new" {% if complaint.status == 'new' %}selected{% endif %}>Nouveau (Remettre en attente)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="reponse">Réponse officielle destinée à l'employé</label>
+            <textarea name="reponse" id="reponse" placeholder="Écrivez votre solution ou les étapes de résolution ici..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="commentaire">Commentaires internes (Notes d'équipe privées)</label>
+            <textarea name="commentaire" id="commentaire" placeholder="Notes techniques ou remarques pour les autres administrateurs..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">Enregistrer et notifier l'utilisateur →</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Espace Agent — Reclaim{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0f0f14;
+            --surface: #f5f4f0;
+            --card: #ffffff;
+            --accent: #2563eb; /* Bleu pro pour différencier l'Agent de l'Admin */
+            --accent-red: #e84545;
+            --muted: #6b7280;
+            --border: #e5e4e0;
+            --sidebar-width: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR AGENT */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--ink);
+            color: #fff;
+            padding: 2.5rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: fixed;
+            top: 0; bottom: 0; left: 0;
+            z-index: 100;
+        }
+        .brand-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 3rem;
+        }
+        .brand-logo span { color: var(--accent); }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex-grow: 1;
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: #8888a0;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+        .nav-link.active {
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #222230;
+            padding-top: 1.5rem;
+        }
+        .btn-logout {
+            color: #6b6b80;
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+        .btn-logout:hover { color: var(--accent-red); }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            padding: 3rem;
+            max-width: 1200px;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        h1, h2, h3 { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+        .page-header { margin-bottom: 2.5rem; }
+        .page-header p { color: var(--muted); font-size: 0.95rem; margin-top: 0.3rem; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <div class="sidebar">
+        <div>
+            <div class="brand-logo">Reclaim<span>.</span> <small style="font-size:0.75rem; color:var(--accent);">Agent</small></div>
+            <nav class="nav-menu">
+                <a href="{% url 'agent_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'agent_dashboard' or request.resolver_match.url_name == 'traiter_reclamation' %}active{% endif %}">
+                    📥 Réclamations reçues
+                </a>
+            </nav>
+        </div>
+        <div class="sidebar-footer">
+            <div style="color: #fff; font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500;">👋 {{ request.user.username }}</div>
+            <a href="{% url 'logout' %}" class="btn-logout">🚪 Se déconnecter</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background: #d1e7dd; color: #0f5132; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>

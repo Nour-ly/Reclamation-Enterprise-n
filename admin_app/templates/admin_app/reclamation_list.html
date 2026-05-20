@@ -1,17 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Liste des réclamations</title>
-</head>
-<body>
-    <h1>Liste des réclamations</h1>
+{% extends 'admin_app/base.html' %}
 
-    <a href="{% url 'add_reclamation' %}">
-        <button>Ajouter une réclamation</button>
-    </a>
+{% block title %}Réclamations — Reclaim{% endblock %}
 
-    <table border="1" cellpadding="10">
+{% block extra_css %}
+<style>
+    .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    .btn-add {
+        background: var(--ink);
+        color: #fff;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: opacity 0.2s;
+    }
+    .btn-add:hover { opacity: 0.85; }
+
+    .table-container {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
+    th {
+        background: #fafafa;
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 1.5rem;
+        font-weight: 700;
+        color: var(--muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    td { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+
+    /* BADGES DYNAMIQUES DE STATUT */
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+    /* Filtres basés sur le template tag get_status_display */
+    .status-nouvelle, .status-new { background: #fef3c7; color: #d97706; }
+    .status-en-cours, .status-in_progress { background: #dbeafe; color: #2563eb; }
+    .status-résolue, .status-resolved { background: #d1fae5; color: #059669; }
+    .status-rejetée, .status-rejected { background: #fee2e2; color: #dc2626; }
+
+    .action-links a {
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-right: 1rem;
+    }
+    .link-edit { color: var(--accent2); }
+    .link-edit:hover { text-decoration: underline; }
+    .link-delete { color: var(--accent); }
+    .link-delete:hover { text-decoration: underline; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="header-actions">
+    <div class="page-header" style="margin-bottom: 0;">
+        <h1>Toutes les réclamations</h1>
+        <p>Consultez, modifiez ou supprimez les réclamations globales du système.</p>
+    </div>
+    <a href="{% url 'add_reclamation' %}" class="btn-add">+ Ajouter une réclamation</a>
+</div>
+
+<div class="table-container">
+    <table>
         <thead>
             <tr>
                 <th>Titre</th>
@@ -21,34 +90,28 @@
                 <th>Actions</th>
             </tr>
         </thead>
-
         <tbody>
             {% for rec in reclamations %}
             <tr>
-                <td>{{ rec.title }}</td>
-                <td>{{ rec.employee.username }}</td>
-                <td>{{ rec.category.name }}</td>
-                <td>{{ rec.get_status_display }}</td>
-
+                <td style="font-weight: 500; color: var(--ink);">{{ rec.title }}</td>
+                <td style="color: var(--muted);">{{ rec.employee.username }}</td>
+                <td><span style="background: #f3f4f6; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem;">{{ rec.category.name }}</span></td>
                 <td>
-                    <!-- Modifier -->
-                    <a href="{% url 'edit_reclamation' rec.id %}">
-                        <button>Modifier</button>
-                    </a>
-
-                    <!-- Supprimer -->
-                    <a href="{% url 'delete_reclamation' rec.id %}"
-                       onclick="return confirm('Voulez-vous vraiment supprimer ?')">
-                        <button>Supprimer</button>
-                    </a>
+                    <span class="badge status-{{ rec.status|lower }} status-{{ rec.get_status_display|slugify }}">
+                        {{ rec.get_status_display }}
+                    </span>
+                </td>
+                <td class="action-links">
+                    <a href="{% url 'edit_reclamation' rec.id %}" class="link-edit">Modifier</a>
+                    <a href="{% url 'delete_reclamation' rec.id %}" class="link-delete" onclick="return confirm('Voulez-vous vraiment supprimer ?')">Supprimer</a>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5">Aucune réclamation trouvée</td>
+                <td colspan="5" style="text-align: center; color: var(--muted); padding: 2rem;">Aucune réclamation trouvée.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+</div>
+{% endblock %}
