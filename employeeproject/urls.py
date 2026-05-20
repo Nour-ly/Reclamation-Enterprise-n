@@ -11,8 +11,14 @@ urlpatterns = [
     path('signup/', employee_views.user_signup, name='signup'),
     path('logout/', employee_views.user_logout, name='logout'),
 
+    # Tes applications existantes
     path('employee/', include('employee.urls')),
     path('agent/', include('agent.urls')),
+
+    # --- INCLUSION DE LA PARTIE DE TA COPINE (ADMIN_APP) ---
+    # On laisse les chemins vides '' pour que ses URLs s'écrivent directement
+    # comme elle l'a codé (ex: /dashboard/, /users/, /categories/)
+    path('', include('admin_app.urls')),
 
     # La racine redirige automatiquement vers la page de login unique
     path('', lambda request: redirect('login')),

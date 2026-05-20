@@ -11,7 +11,7 @@ def user_login(request):
     if request.user.is_authenticated:
         # Si l'utilisateur est déjà connecté, on le redirige selon son rôle
         if request.user.is_superuser:
-            return redirect('/admin/')
+            return redirect('dashboard')  # Redirige vers le dashboard Admin de ta copine
         elif request.user.groups.filter(name='Agent').exists():
             return redirect('/agent/')
         else:
@@ -25,17 +25,18 @@ def user_login(request):
         if user is not None:
             login(request, user)
 
-            # Tri automatique et transparent lors de la soumission du formulaire
+            # Tri automatique lors de la soumission du formulaire
             if user.is_superuser:
-                return redirect('/admin/')
+                return redirect('dashboard')  # Redirige vers le dashboard Admin de ta copine
             elif user.groups.filter(name='Agent').exists():
                 return redirect('/agent/')  # Redirection vers ton espace Agent
             else:
-                return redirect('employee_dashboard')  # Redirection vers l'espace de Khaoula
+                return redirect('employee_dashboard')  # Redirection vers l'espace de l'employé
         else:
             return render(request, 'employee/login.html', {'error': 'Identifiant ou mot de passe incorrect.'})
 
     return render(request, 'employee/login.html')
+
 def user_signup(request):
     if request.user.is_authenticated:
         return redirect('employee_dashboard')
